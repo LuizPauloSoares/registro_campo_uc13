@@ -1,12 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:untitled/features/registros/domain/registro_campo.dart';
 
 import '../domain/registro_campo.dart';
 
 abstract final class RegistroRemoteMapper {
-
-  static Map<String, Object?> toFirestore(RegistroCampo r) =>{
-
+  static Map<String, Object?> toFirestore(RegistroCampo r) => {
     'id': r.id,
 
     'titulo': r.titulo.trim(),
@@ -30,32 +27,39 @@ abstract final class RegistroRemoteMapper {
     'removido': r.removido,
   };
 
-  static RegistroCampo fromFirestore(Map<String, Object?> map){
-
+  static RegistroCampo fromFirestore(Map<String, Object?> map) {
     DateTime data(String campo) =>
         (map[campo] as Timestamp).toDate().toLocal();
 
     return RegistroCampo(
-        id: map['id'] as String,
-        titulo: map['titulo'] as String,
-        descricao: map['descricao'] as String ??'',
-        categoriaId: (map['categoriaId'] as num).toInt(),
-        categoriaNome: map['categoriaNome'] as String?,
-        dataVisita: data('dataVisita'),
-        situacao: SituacaoRegistro.values.byName(
-          map['situacao'] as String,
-        ),
-        fotoPath:  null,
-        fotoUrl: map['fotoUrl'] as String?,
-        latitude:(map['latitude'] as num?)?.toDouble()),
-        longitude:(map['longitude'] as num?)?.toDouble()),
+      id: map['id'] as String,
 
-        statusSincronizacao: StatusSincronizacao.sincronizado,
+      titulo: map['titulo'] as String,
+      descricao: map['descricao'] as String? ?? '',
 
-        criadoEm: data('criadoEm'),
-        atualizadoEm: data('atualizadoEm'),
+      categoriaId: (map['categoriaId'] as num).toInt(),
 
-        removido: map['removido'] as bool? ??false,
+      categoriaNome: map['categoriaNome'] as String?,
 
+      dataVisita: data('dataVisita'),
+
+      situacao: SituacaoRegistro.values.byName(
+        map['situacao'] as String,
+      ),
+
+      fotoPath: null,
+
+      fotoUrl: map['fotoUrl'] as String?,
+
+      latitude: (map['latitude'] as num?)?.toDouble(),
+      longitude: (map['longitude'] as num?)?.toDouble(),
+
+      statusSincronizacao: StatusSincronizacao.sincronizado,
+
+      criadoEm: data('criadoEm'),
+      atualizadoEm: data('atualizadoEm'),
+
+      removido: map['removido'] as bool? ?? false,
+    );
   }
 }

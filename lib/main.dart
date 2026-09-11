@@ -1,19 +1,37 @@
-import 'package:flutter/material.dart';//importa componentes visuais principais do flutter
-import 'package:untitled/features/registros/domain/registro_campo.dart';
+import 'package:flutter/material.dart';
 
-import 'core/database/app_database.dart';//importa a classe responsavel por abir e configurar a conecçao com o banco sqllite
+import 'package:firebase_core/firebase_core.dart';
 
-import 'features/registros/data/registro_dao.dart';//importa a dao q executa os comamndos aql relacionados a registros
+import 'package:firebase_auth/firebase_auth.dart';
 
-import 'features/registros/data/sqlite_registro_repository.dart';//importa a implementaçao do repositorio q utiliza a registroDao e o sqlite
+import 'firebase_options.dart';
 
-import 'features/registros/domain/registro_repository.dart';//importa  o contrrato q defi ne as operaçoes disponiveis para regisro
+import 'core/auth/auth_service.dart';
 
-import 'features/registros/presentation/registro_list_page.dart';//importa a primeira pagina exibida pelo app
+import 'core/database/app_database.dart';
 
-void main(){
+import 'features/registros/data/registro_dao.dart';
 
+import 'features/registros/data/sqlite_registro_repository.dart';
+
+import 'features/registros/domain/registro_repository.dart';
+
+import 'features/registros/presentation/registro_list_page.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  final authService = AuthService(FirebaseAuth.instance);
+
+  final usuario = await authService.garantirUsuario();
+
+  debugPrint(
+    'Sessão Firebase pronta: ${usuario.uid.substring(0, 6)}…',
+  );
 
   final database = AppDatabase();
 
@@ -26,35 +44,29 @@ void main(){
   );
 }
 
-class  RegistroCampoApp extends StatelessWidget{
-
-  const  RegistroCampoApp({
+class RegistroCampoApp extends StatelessWidget {
+  const RegistroCampoApp({
     super.key,
     required this.repository,
-});
+  });
 
   final RegistroRepository repository;
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Registro de Campo',
-
       debugShowCheckedModeBanner: false,
-
       theme: ThemeData(
         fontFamily: 'RobotoUC13',
-
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xff1565c0),),
-
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1565C0),
+        ),
         useMaterial3: true,
-
         inputDecorationTheme: const InputDecorationTheme(
-
           border: OutlineInputBorder(),
         ),
       ),
-
       home: RegistroListPage(
         repository: repository,
       ),
